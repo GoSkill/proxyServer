@@ -139,17 +139,10 @@ func viewFriends(id int) Friends { //[]uint8 {
 	//Удалить таблицу, если есть
 	_ = `DROP VIEW IF EXISTS Persons_Friendship_Summary`
 	//создать виртуальную таблицу
-	_ = `CREATE VIEW Persons_Friendship_Summary AS SELECT PersonID AS pfs_ID, max(FirstName) 
-	AS pfs_FirstName, cast(concat('[', group_concat(json_quote(LastN) ORDER BY LastN 
-	SEPARATOR ','), ']') as json) AS pfs_Friend_array FROM Persons 
-	INNER JOIN Friendship ON Persons.PersonID = Friendship.SourceID 
-	INNER JOIN Users ON Friendship.TargetID = Users.UserID GROUP BY Persons.PersonID`
-	/*	//создать виртуальную таблицу типа JSON
-		_ = `CREATE VIEW Persons_Friendship_Summary AS SELECT PersonID AS pfs_ID, max(FirstName)
-		AS pfs_FirstName, cast(concat('[', group_concat(json_quote(LastN) ORDER BY LastN SEPARATOR ','), ']')
-		as json) AS pfs_Friend_array FROM Persons INNER JOIN Friendship ON Persons.PersonID = Friendship.SourceID
-		INNER JOIN Users ON Friendship.TargetID = Users.UserID GROUP BY Persons.PersonID`
-	*/
+	_ = `CREATE VIEW Persons_Friendship_Summary AS SELECT PersonID AS pfs_ID, max(FirstName) AS pfs_FirstName, 
+	group_concat(LastN ORDER BY LastN SEPARATOR ',') AS pfs_Friend_array FROM Persons INNER JOIN Friendship ON 
+	Persons.PersonID = Friendship.SourceID INNER JOIN Users ON Friendship.TargetID = Users.UserID GROUP BY Persons.PersonID`
+
 	//создаем оператор MYSQL получения друзей по ID
 	stmt := `SELECT pfs_ID, pfs_FirstName, pfs_Friend_array FROM Persons_Friendship_Summary WHERE pfs_ID = ?`
 	row := DB.QueryRow(stmt, id)
