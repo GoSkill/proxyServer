@@ -1,0 +1,58 @@
+<!--home.html-->
+<!DOCTYPE html>
+<html>
+  <head>  
+    <meta charset="UTF-8"> 
+    <style>        
+        table {
+          border: 3px solid #ccc;
+          border-spacing: 60px;          
+        }        
+        tr:nth-child(even) {            
+          background-color: #D6EEEE;
+        }
+    </style>
+  <!-- место вставки шаблона header.html   -->
+  {{ template "header.html" .}}      
+  </head>
+  <body>
+    <!--список пользователей в таблице -->
+    <h3>Список пользователей</h3>
+    <table style="width:100%">      
+    {{if .Payload}}    
+        <tr>           
+            <th style="width:15%" ><p>ID</p></th>
+            <th><p>Фамилия</p></th>
+            <th><p>Имя</p></th>            
+            <th><p>Возраст</p></th>           
+        </tr>
+    {{range .Payload}}
+        <tr>           
+          <td><form action="/users/view/{{.ID}}"><h5><button>{{ .ID}}.выбрать</button></h5></form></td>  
+          <td><h4>{{ .FirstName}}</h4></td>  
+          <td><h4>{{ .LastName}}</h4> </td>           
+          <td><h4>{{ .Age}}</h4></td> 
+<!-- кнопка "удалить" не работает    -->                           
+          <td><form action="/users/delete/{{.ID}}" method="POST" target="_self"><h5><button>{{ .ID}}.удалить</button></h5></form></td>
+        </tr>
+    {{end}}
+    </table>      
+    {{else}}
+        <p>Здесь не на что смотреть... пока!</p>
+    {{end}}
+<!-- ввод данных    -->      
+  <form action="/users/create" method="POST" target="_self">    
+    <h4>Создать пользователя</h4>  
+    <label for="text">Фамилия:</label><br>
+    <input type="json" name="FirstName" LastName="FirstName" /><br> 
+    <label for="text">Имя:</label><br> 
+    <input type="json" name="LastName" FirstName="LastName" /><br> 
+    <label for="number">Возраст:</label><br>  
+    <input type="number" name="Age" Age="Age" /><br>   
+    <input type="submit" value="Ввод данных">
+  </form>   
+  </body>                
+<!-- место вставки шаблона footer.html -->
+{{ template "footer.html" .}}
+</html>  
+
