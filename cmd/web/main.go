@@ -17,16 +17,16 @@ var DB *sql.DB
 func main() {
 	addr := flag.String("addr", ":8080", "Сетевой адрес HTTP")
 	dsn := flag.String("dsn", "web:1@/proxyserver?parseTime=true", "Имя источника данных MySQL")
-	flag.Parse() 
+	flag.Parse()
 
 	router := gin.Default()
 	router.SetTrustedProxies([]string{"127.0.0.1"}) //доверенный IP-адрес
-	
-	DB, _ = sql.Open("mysql", *dsn)//Инициализировать базу данных MYSQL
-	
+
+	DB, _ = sql.Open("mysql", *dsn) //Инициализировать базу данных MYSQL
+
 	InitializeRoutes()
 
-	s := &http.Server{		
+	s := &http.Server{
 		Addr:           *addr,
 		Handler:        InitializeRoutes(),
 		ReadTimeout:    10 * time.Second,
@@ -36,5 +36,5 @@ func main() {
 
 	log.Printf("Сервер слушает на %s", s.Addr)
 	s.ListenAndServe()
-	
+
 }

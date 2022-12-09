@@ -23,7 +23,7 @@ func getAllPerson(c *gin.Context) {
 		c.String(404, "ошибка извлечения данных")
 		return
 	}
-		
+
 	// Установить статус HTTP 200 (OK)
 	c.HTML(http.StatusOK, "home.html", gin.H{
 		"Payload": users,
