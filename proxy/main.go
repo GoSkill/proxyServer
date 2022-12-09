@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -11,41 +12,38 @@ import (
 // адрес прокси
 const proxy string = "localhost:8800"
 
-// адреса серверов
-var (
-	counter int    = 0              //переключатель
-	host1   string = "http://:8080" //1-й сервер
-	host2   string = "http://:8081" //2-й сервер
-)
+var counter int = 0
 
 func main() {
 
-	http.HandleFunc("/", reverseProxy)
-	log.Printf("   PROXY по адресу:  %s", proxy)
+	host1 := flag.String("host1", ":8080", "Сетевой адрес HTTP")
+	host2 := flag.String("host2", ":8081", "Сетевой адрес HTTP")
+	flag.Parse() //функция разбора командной строки
 
-	log.Fatalln(http.ListenAndServe(proxy, nil))
-}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if counter == 0 {
+			urlFirst, err := url.Parse(*host1)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			proxy := httputil.NewSingleHostReverseProxy(urlFirst)
+			proxy.ServeHTTP(w, r)
+			log.Printf("доступен: %s%s", *host1, r.URL)
+			counter++
+			return
+		}
 
-// обработчик обратного прокси для 2-х серверов
-func reverseProxy(w http.ResponseWriter, r *http.Request) {
-	if counter == 0 {
-		urlFirst, err := url.Parse(host1)
+		urlSecond, err := url.Parse(*host2)
 		if err != nil {
 			log.Fatalln(err)
 		}
-		proxy := httputil.NewSingleHostReverseProxy(urlFirst)
+		proxy := httputil.NewSingleHostReverseProxy(urlSecond)
 		proxy.ServeHTTP(w, r)
-		log.Printf("доступен: %s%s", host1, r.URL)
-		counter++
-		return
-	}
+		log.Printf("доступен: %s%s", *host2, r.URL)
+		counter--
+	})
 
-	urlSecond, err := url.Parse(host2)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	proxy := httputil.NewSingleHostReverseProxy(urlSecond)
-	proxy.ServeHTTP(w, r)
-	log.Printf("доступен: %s%s", host2, r.URL)
-	counter--
+	log.Printf("   PROXY по адресу:  %s", proxy)
+
+	log.Fatalln(http.ListenAndServe(proxy, nil))
 }
