@@ -13,7 +13,7 @@ import (
 )
 
 var DB *sql.DB
-
+ 
 func main() {
 	addr := flag.String("addr", ":8080", "Сетевой адрес HTTP")
 	dsn := flag.String("dsn", "web:1@/proxyserver?parseTime=true", "Имя источника данных MySQL")
