@@ -30,13 +30,10 @@ var (
 	users   []Person
 )
 
-// Инициализировать базу данных MYSQL
-var DB, _ = openDB("web:1@/proxyserver?parseTime=true")
-
 // 1. "GET" запрос нескольких (10)строк
 func Latest() ([]Person, error) {
 	//создаем оператор MYSQL
-	stmt := `SELECT PersonID, FirstName, LastName, Age FROM Persons ORDER BY PersonID DESC LIMIT 10`
+	stmt := `SELECT PersonID, FirstName, LastName, Age FROM Persons ORDER BY PersonID LIMIT 10`
 	//Получаем строки для их итерации
 	rows, err := DB.Query(stmt)
 	if err != nil {
