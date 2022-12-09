@@ -10,7 +10,7 @@ import (
 	//драйвер для MYSQL(импорт только так"_")
 	_ "github.com/go-sql-driver/mysql"
 )
-
+ //
 func main() {
 
 	InitializeRoutes()
