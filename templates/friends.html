@@ -1,27 +1,25 @@
 <!--friends.html-->
 <!DOCTYPE html>
-<html>
-	<head>
-    	<meta charset="UTF-8">       
-        <!-- место вставки шаблона header.html -->
-        {{ template "header.html" .}}
-    </head>
+    <html>
+	    <head>
+    	    <meta charset="UTF-8">       
+                {{ template "header.html" .}}
+        </head>
     <body>                       
         <div>
-        {{if or (ne .Id  0) }} 
-          <form action="/users/view/{{.Id}}"><button><h5>{{.Id}}</h5></form>
+            {{if or (ne .Id  0) }} 
+                <form action="/users/view/{{.Id}}"><button><h5>{{.Id}}</h5></form>
         </div>    
-        <h4>{{ .Name}} дружит с: </h4>
+        <h4>{{ .Name}} имеет друзей : </h4>
             <ul>{{range .Payload}}
                <li>
                    <h4><b>{{ . }}</b></h4>
                 </li>
             {{end}}
             </ul>
-        {{else}}
-            <h3>У этого пользователя нет друзей</h3>
-        {{end}}
+                {{else}}
+                    <h3>У этого пользователя нет друзей</h3>
+                {{end}}
     </body>
-<!-- место вставки шаблона footer.html -->
-{{ template "footer.html" .}}
-</html>
+        {{ template "footer.html" .}}
+    </html>
