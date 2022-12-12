@@ -1,10 +1,10 @@
 <!--home.html-->
 <!DOCTYPE html>
-<html>
+<html lang="ru">
   <head>  
     <meta charset="UTF-8"> 
     <style>        
-        table {
+        table  {
           border: 3px solid #ccc;
           border-spacing: 60px;          
         }        
@@ -13,46 +13,83 @@
         }
     </style>
   <!-- место вставки шаблона header.html   -->
-  {{ template "header.html" .}}      
+  {{ template "header.html" .}}
+  <script>
+    function deleteName(f) {
+     if (confirm("Вы уверены, что хотите удалить выделенный пункт?\nЭта операция не восстановима.")) 
+        f.submit();
+    }
+   </script>      
   </head>
-  <body>
+  <body >
+    <!-- ввод данных    -->      
+  <form action="./create" method="POST" target="_self">    
+    <h4>Создать пользователя</h4> 
+      <table style="width:100%">    
+        <tr><th style="width:10%"></th>                  
+            <th ><label for="text">Фамилия:</label></th> <th style="width:20%"></th>         
+            <th ><label for="text">Имя:</label></th> <th style="width:20%"></th>
+            <th style="width:20%"><label for="number">Возраст:</label></th>        
+        </tr>
+        <td>
+          <th ><input  type="json" name="FirstName" LastName="FirstName" /></th>
+          <th style="width:20%"></th>
+          <th ><input  type="json" name="LastName" FirstName="LastName" /></th>
+          <th style="width:20%"></th>
+          <th ><input style="width:40%" type="number" name="Age" Age="Age" /></th> 
+          <th ><input type="submit" value="Ввод данных">
+        </td>  
+      </table>
+  </form>   
+  
     <!--список пользователей в таблице -->
-    <h3>Список пользователей</h3>
+    <h4>Список пользователей</h4>
     <table style="width:100%">      
     {{if .Payload}}    
         <tr>           
-            <th style="width:15%" ><p>ID</p></th>
-            <th><p>Фамилия</p></th>
-            <th><p>Имя</p></th>            
-            <th><p>Возраст</p></th>           
+            <th style="width:16%" ><p>ID</p></th>
+            <th style="width:16%" ><p>Фамилия</p></th>
+            <th style="width:16%" ><p>Имя</p></th>            
+            <th style="width:16%" ><p>Возраст</p></th>  
+            <th style="width:16%" ><p>Изменить возраст</p></th>
+            <th style="width:10%" ><p>Удалить</p></th>       
         </tr>
     {{range .Payload}}
-        <tr>           
-          <td><form action="/users/view/{{.ID}}"><h5><button>{{ .ID}}.выбрать</button></h5></form></td>  
+        <tr>          
+<!-- ID и кнопка "выбрать"   -->   
+          <td><form action="./users/view/{{.ID}}"><h5><button>{{ .ID}}.выбрать</button></h5></form></td>  
           <td><h4>{{ .FirstName}}</h4></td>  
           <td><h4>{{ .LastName}}</h4> </td>           
-          <td><h4>{{ .Age}}</h4></td> 
-<!-- кнопка "удалить" не работает    -->                           
-          <td><form action="/users/delete/{{.ID}}" method="POST" target="_self"><h5><button>{{ .ID}}.удалить</button></h5></form></td>
-        </tr>
+          <td><h4>{{ .Age}}  
+<!-- поле и кнопка "Изменить возраст"   -->                  
+          <td ><form action="./change/{{.ID}}" method="POST" target="_self">
+                  <input style="width:30%" type="number" name="Age" Age="Age" />
+                  <input type="submit" value="{{.ID}}.изменить"> <br></td>
+               </form>
+          </td> 
+<!-- кнопка "удалить"   -->                           
+          <td><form action="./delete/{{.ID}}" method="POST" target="_self" onsubmit="deleteName(this);return false;">
+                  <input type="submit" value="{{.ID}}.удалить"> <br></td>
+              </form>
+          </td> 
+        </tr>         
     {{end}}
     </table>      
     {{else}}
         <p>Здесь не на что смотреть... пока!</p>
     {{end}}
+
 <!-- ввод данных    -->      
-  <form action="/users/create" method="POST" target="_self">    
-    <h4>Создать пользователя</h4>  
-    <label for="text">Фамилия:</label><br>
-    <input type="json" name="FirstName" LastName="FirstName" /><br> 
-    <label for="text">Имя:</label><br> 
-    <input type="json" name="LastName" FirstName="LastName" /><br> 
-    <label for="number">Возраст:</label><br>  
-    <input type="number" name="Age" Age="Age" /><br>   
+  <form action="./friendship" method="POST" target="_self">    
+    <h4>Пригласить друга</h4>  
+    <label for="text">ID инициатора:</label><br>
+    <input type="number" name="SourceId" SourceId="SourceId" /><br> 
+    <label for="text">ID друга:</label><br> 
+    <input type="number" name="TargetId" TargetId="TargetId" /><br> 
+     
     <input type="submit" value="Ввод данных">
   </form>   
   </body>                
 <!-- место вставки шаблона footer.html -->
 {{ template "footer.html" .}}
 </html>  
-

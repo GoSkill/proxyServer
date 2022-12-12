@@ -23,8 +23,6 @@ func getAllPerson(c *gin.Context) {
 		c.String(404, "ошибка извлечения данных")
 		return
 	}
-
-	// Установить статус HTTP 200 (OK)
 	c.HTML(http.StatusOK, "home.html", gin.H{
 		"Payload": users,
 	})
@@ -36,31 +34,32 @@ func getPerson(c *gin.Context) {
 		user := viewById(ID) //если есть ID?
 		// визуализация шаблона HTML
 		c.HTML(http.StatusOK, "user.html", gin.H{
-			"payload": user, //Передать данные
+			"payload": user, //Передать данные  шаблон
 		})
-	} else { // Если не верный ID, то ошибка
+	} else {
 		c.String(404, "Неверный ID")
 	}
 }
 
 // 3. Вставить строку в MYSQL
 func postPerson(c *gin.Context) {
-	//получить данные "json" из запроса
-	//var newuser NewUser
 	if err := c.Bind(&newUser); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 	} else {
 		Insert(newUser) //вставить в таблицу MYSQL
-		c.IndentedJSON(http.StatusCreated, newUser)
 	}
+	c.HTML(http.StatusOK, "create.html", gin.H{
+		"new": newUser,
+	})
 }
 
 // 4. Удалить строку в MYSQL
 func deletePerson(c *gin.Context) {
-	//получить параметр из запроса
-	if ID, err := strconv.Atoi(c.Param("id")); err == nil {
-		deleteById(ID) //удалить строку таблицы MYSQL
-		c.String(200, "ID удален")
+	if id, err := strconv.Atoi(c.Param("id")); err == nil {
+		deleteById(id) //удалить строку таблицы MYSQL
+		c.HTML(http.StatusOK, "delete.html", gin.H{
+			"del": id,
+		})
 	} else {
 		c.String(400, "Неверный ID")
 	}
@@ -69,12 +68,14 @@ func deletePerson(c *gin.Context) {
 // 5. Изменить поле столбца в MYSQL
 func putAge(c *gin.Context) {
 	if id, err := strconv.Atoi(c.Param("id")); err == nil {
-		//получить данные "json" из запроса
-		if err := c.BindJSON(&newAge); err != nil {
+		if err := c.ShouldBind(&newUser); err != nil {
 			c.AbortWithStatus(http.StatusBadRequest)
 		} else {
-			Change(newAge, (id)) //изменить поле в строке MYSQL
-			c.String(200, "Age изменен")
+			Change(newUser.Age, id)
+			c.HTML(http.StatusOK, "change.html", gin.H{
+				"change": newUser,
+				"id":     id,
+			})
 		}
 	} else {
 		c.String(400, "Неверный ID")
@@ -85,15 +86,16 @@ func putAge(c *gin.Context) {
 var union Friendship
 
 func postFriends(c *gin.Context) {
-	//получить данные "json" из запроса
-	if err := c.BindJSON(&union); err != nil {
+	if err := c.Bind(&union); err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 	} else {
-		Friend(union) //изменить поле в строке MYSQL
-
+		Friend(union) //первая запись в строке MYSQL
 		union.SourceId, union.TargetId = union.TargetId, union.SourceId
-		Friend(union) //изменить поле в строке MYSQL
-		c.String(201, "SourceId и TargetId теперь друзья")
+		Friend(union) //вторая запись в строке MYSQL
+		c.HTML(http.StatusOK, "friendship.html", gin.H{
+			"ID1": union.SourceId,
+			"ID2": union.TargetId,
+		})
 	}
 }
 
@@ -110,14 +112,12 @@ func getFriends(c *gin.Context) {
 		SourceN := f.SourceName
 		FriendsAll := string(f.AllFriends)
 		wordsFriendsAll := strings.Split(FriendsAll, ",")
-		// визуализация шаблона HTML
 		c.HTML(http.StatusOK, "friends.html", gin.H{
-			//Передать данные в форму HTML
 			"Id":      ID,
 			"Name":    SourceN,
 			"Payload": wordsFriendsAll,
 		})
-	} else { // Если не верный ID, то ошибка
+	} else {
 		c.String(404, "Неверный ID")
 	}
 }

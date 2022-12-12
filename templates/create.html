@@ -1,0 +1,26 @@
+<!--create.html-->
+<!DOCTYPE html>
+    <html>
+        <head>
+            <meta charset="UTF-8"> 
+        </head>
+        <body>
+        <!--вставка шаблона header.html-->
+            {{ template "header.html" .}}  
+        <h4>Создан новый пользователь</h4>
+            <table style="width:40%"><!-- шапка таблицы  --> 
+                <tr> 
+                    <th style="width:20%"><p>Имя</p></th>
+                    <th style="width:20%"><p>Фамилия</p></th>            
+                    <th style="width:15%"><p>Возраст</p></th>
+                </tr>        
+                <tr><!--Отображение имени, фамилии и возраста-->
+                    <td><h4>{{ .new.LastName}} </h4></td> 
+                    <td><h4>{{ .new.FirstName}}</h4></td>
+                    <td><h4>{{ .new.Age}}</h4></td>
+                </tr>      
+            </table>
+        </body>  
+        <!-- место вставки шаблона footer.html -->
+            {{ template "footer.html" .}}
+    </html>    

@@ -1,8 +1,11 @@
 package main
 
 import (
+	_ "database/sql"
 	"fmt"
 	"log"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Person struct { //поля структуры должны соответствовать таблице MYSQL
@@ -10,6 +13,7 @@ type Person struct { //поля структуры должны соответс
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Age       int    `json:"age"`
+	//	NewAge int `json:"newage"`
 }
 
 type Friends struct { //дубль-таблица Person для MYSQL
@@ -26,7 +30,6 @@ type Friendship struct { // Структура для запроса дружб�
 
 var (
 	newUser Person
-	newAge  int
 	users   []Person
 )
 
@@ -61,26 +64,22 @@ func Latest() ([]Person, error) {
 
 // 2. "GET" запрос одной строки
 func viewById(id int) Person {
-	//создаем оператор MYSQL
 	stmt := `SELECT PersonID, FirstName, LastName, Age FROM Persons WHERE PersonID = ?`
-	//Получаем строку
 	row := DB.QueryRow(stmt, id)
 	s := Person{}
 	//копируем значения в поля структуры "Person"
 	_ = row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.Age)
-	return s //Выполнено!
+	return s
 }
 
 // 3. "POST" запрос вставки одной строки
-func Insert(u Person) { //Person) {
-	//создаем оператор MYSQL
+func Insert(u Person) {
 	stmtP := `INSERT INTO Persons (FirstName, LastName, Age) VALUES(?, ?, ?)`
 	_, err := DB.Exec(stmtP, &u.FirstName, &u.LastName, &u.Age)
 	if err != nil {
 		log.Println(err)
 	}
 	//метод DB.Exec() используют только для вставки (INSERT) или удаления (DELETE)строк
-	//метод выполняет запрос без возврата строк
 	//дублируем таблицу "Persons == Users" (требуется для работы с друзьями)
 	stmtU := `INSERT INTO Users (FirstN, LastN, AgeU) VALUES(?, ?, ?)`
 	_, err = DB.Exec(stmtU, &u.FirstName, &u.LastName, &u.Age)
@@ -91,7 +90,6 @@ func Insert(u Person) { //Person) {
 
 // 4. "DELETE" запрос удаления одной строки
 func deleteById(id int) {
-	//удаляем пользователя из таблицы друзей "Friendship"
 	stmtF := `DELETE FROM Friendship WHERE SourceID = ? OR TargetID = ?`
 	_, err := DB.Exec(stmtF, id, id)
 	if err != nil {
@@ -106,12 +104,12 @@ func deleteById(id int) {
 
 // 5. "PUT" запрос изменения поля строки
 func Change(newAge int, id int) {
-	//создаем оператор MYSQL
 	stmtP := `UPDATE Persons SET Age = ? WHERE PersonID = ?`
 	_, err := DB.Exec(stmtP, newAge, id)
 	if err != nil {
 		log.Println(err)
 	}
+	fmt.Printf("models %v %v\n", newAge, id)
 	//корректируем таблицу "Users" в соответствии с "Persons"
 	stmtU := `UPDATE Users SET AgeU = ? WHERE UserID = ?`
 	_, err = DB.Exec(stmtU, newAge, id)
@@ -139,11 +137,10 @@ func viewFriends(id int) Friends { //[]uint8 {
 	_ = `CREATE VIEW Persons_Friendship_Summary AS SELECT PersonID AS pfs_ID, max(FirstName) AS pfs_FirstName, 
 	group_concat(LastN ORDER BY LastN SEPARATOR ',') AS pfs_Friend_array FROM Persons INNER JOIN Friendship ON 
 	Persons.PersonID = Friendship.SourceID INNER JOIN Users ON Friendship.TargetID = Users.UserID GROUP BY Persons.PersonID`
-
 	//создаем оператор MYSQL получения друзей по ID
 	stmt := `SELECT pfs_ID, pfs_FirstName, pfs_Friend_array FROM Persons_Friendship_Summary WHERE pfs_ID = ?`
 	row := DB.QueryRow(stmt, id)
 	f := Friends{}
 	_ = row.Scan(&f.SourceID, &f.SourceName, &f.AllFriends)
-	return f //Выполнено!
+	return f
 }

@@ -9,6 +9,10 @@ import (
 	"net/url"
 )
 
+//go run ./cmd/web -addr="127.0.0.1:8085" -dsn="web:1@/proxyserver?parseTime=true"
+//go run ./cmd/web -addr="127.0.0.1:8086"
+//go run ./proxy -host1="127.0.0.1:8085" -host2="http://:8086"
+
 // адрес прокси
 const proxy string = "localhost:8800"
 
@@ -16,9 +20,9 @@ var counter int = 0
 
 func main() {
 
-	host1 := flag.String("host1", ":8080", "Сетевой адрес HTTP")
-	host2 := flag.String("host2", ":8081", "Сетевой адрес HTTP")
-	flag.Parse() //функция разбора командной строки
+	host1 := flag.String("host1", "http://:8080", "Сетевой адрес HTTP")
+	host2 := flag.String("host2", "http://:8081", "Сетевой адрес HTTP")
+	flag.Parse()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if counter == 0 {
