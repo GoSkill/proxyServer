@@ -1,0 +1,23 @@
+<!--friendship.html-->
+<!DOCTYPE html>
+    <html>
+        <head>
+            <meta charset="UTF-8"> 
+        </head>
+        <body>
+            {{ template "header.html" .}}  
+            <table style="width:80%"><!-- шапка таблицы  --> 
+                <tr>
+                    <th style="width:60%"><h4>Пользователь {{ .ID1}}  и {{ .ID2}} теперь друзья</h4></th>            
+                    <th style="width:50%"></th>
+                    
+                </tr>        
+                <tr>
+                    <td><h4>{{ .ID1.FirstName}}</h4></td>
+                    <td><h4>{{ .ID2.FirstName}}</h4></td>
+                    
+                </tr>      
+            </table>
+        </body> 
+            {{ template "footer.html" .}}
+    </html>    

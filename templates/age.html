@@ -1,0 +1,25 @@
+<!--age.html-->
+<!DOCTYPE html>
+<html>
+	<head>
+    	<meta charset="UTF-8">       
+        {{ template "header.html" .}}
+    </head>
+    <body>                       
+        <div>
+        {{if or (ne .Id  0) }} 
+            <form action="/users/view/{{.Id}}"><button><h5>{{.Id}}</h5></form>
+        </div>    
+            <h4>{{ .Name}} дружит с: </h4>
+                <ul>{{range .Payload}}
+                    <li>
+                        <h4><b>{{ . }}</b></h4>
+                    </li>
+        {{end}}
+                </ul>
+            {{else}}
+                <h3>У этого пользователя нет друзей</h3>
+            {{end}}
+    </body>
+        {{ template "footer.html" .}}
+</html>
