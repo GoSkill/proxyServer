@@ -59,13 +59,9 @@ go run ./proxy -host1="http://:8080" -host2="http://:8085"
 Создать 1 таблицу:
 
 CREATE TABLE Persons 
-
 PersonID int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-
 FirstName varchar(20) NOT NULL, 
-
 LastName varchar(20) NOT NULL, 
-
 Age int NOT NULL);
 
 Создать 2 таблицу:
