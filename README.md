@@ -58,20 +58,35 @@ go run ./proxy -host1="http://:8080" -host2="http://:8085"
 
 Создать 1 таблицу:
 
-CREATE TABLE Persons (PersonID int NOT NULL PRIMARY KEY AUTO_INCREMENT, FirstName varchar(20) NOT NULL, LastName varchar(20) NOT NULL, Age int NOT NULL);
+CREATE TABLE Persons 
+PersonID int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+FirstName varchar(20) NOT NULL, 
+LastName varchar(20) NOT NULL, 
+Age int NOT NULL);
 
 Создать 2 таблицу:
 
 "Friendship" - хранилище друзей (2 столбца)
-CREATE TABLE Friendship  (SourceID int  NOT NULL, TargetID int NOT NULL, FOREIGN KEY(SourceID) REFERENCES Persons(PersonID), FOREIGN KEY (TargetID) REFERENCES Users (UserID) ON UPDATE CASCADE ON DELETE CASCADE);
+CREATE TABLE Friendship  
+SourceID int  NOT NULL, 
+TargetID int NOT NULL, 
+FOREIGN KEY(SourceID) REFERENCES Persons(PersonID), 
+FOREIGN KEY (TargetID) REFERENCES Users (UserID) ON UPDATE CASCADE ON DELETE CASCADE);
 
 Создать 3 таблицу:
 
 "Users" - (4 столбца) дублирует "Persons" и необходима для получения "представления" (виртуальной таблицы) при получении списка друзей пользователя
-CREATE TABLE Users (UserID int NOT NULL PRIMARY KEY AUTO_INCREMENT, FirstN varchar(20) NOT NULL, LastN varchar(20) NOT NULL, AgeU int NOT NULL);
+CREATE TABLE Users 
+UserID int NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+FirstN varchar(20) NOT NULL, 
+LastN varchar(20) NOT NULL, 
+AgeU int NOT NULL);
 
 Создать 4 таблицу:
 
 "Persons_Friendship_Summary" - представляет выборку всех друзей пользователя по его ID
-CREATE VIEW Persons_Friendship_Summary AS SELECT PersonID AS pfs_ID, max(FirstName) AS pfs_FirstName, group_concat(LastN ORDER BY LastN SEPARATOR ',') AS pfs_Friend_array FROM Persons INNER JOIN Friendship ON Persons.PersonID = Friendship.SourceID INNER JOIN Users ON Friendship.TargetID = Users.UserID GROUP BY Persons.PersonID;
+CREATE VIEW Persons_Friendship_Summary AS SELECT PersonID AS pfs_ID, 
+max(FirstName) AS pfs_FirstName, 
+group_concat(LastN ORDER BY LastN SEPARATOR ',') 
+AS pfs_Friend_array FROM Persons INNER JOIN Friendship ON Persons.PersonID = Friendship.SourceID INNER JOIN Users ON Friendship.TargetID = Users.UserID GROUP BY Persons.PersonID;
 
